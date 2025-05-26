@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, Text, View, ScrollView, Image } from 'react-native';
+import { auth, db } from '../../firebase/firebaseConfig';
 
 export default function Home() {
   const [data, setData] = useState([]);

@@ -2,9 +2,8 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, TextInput, Button, Alert, StyleSheet } from
 'react-native';
-import { auth } from '../../firebase/firebaseConfig';
+import { auth, db } from '../../firebase/firebaseConfig';
 import { doc, getDoc, updateDoc } from 'firebase/firestore';
-import { db } from '../../firebase/firebaseConfig';
 
 export default function Perfil() {
 const [nombre, setNombre] = useState('');
