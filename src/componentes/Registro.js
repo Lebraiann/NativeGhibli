@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { View, TextInput, Button, Text, StyleSheet, Alert } from
 'react-native';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
-
 import { doc, setDoc } from 'firebase/firestore';
 import { auth, db } from '../../firebase/firebaseConfig';
 import { useNavigation } from '@react-navigation/native';
@@ -24,17 +23,15 @@ const userCredential = await createUserWithEmailAndPassword(auth,
 correo, contrasena);
 const user = userCredential.user;
 
-// 🔁 Guardar datos en Firestore con el mismo UID como ID del
-documento
+// 🔁 Guardar datos en Firestore con el mismo UID como ID deldocumento
 await setDoc(doc(db, 'usuarios', user.uid), {
-uid: user.uid,
-nombre,
-correo,
-fecha,
-telefono,
-ganados,
-
-perdidos
+    uid: user.uid,
+    nombre,
+    correo,
+    fecha,
+    telefono,
+    ganados,
+    perdidos
 });
 
 Alert.alert('Éxito', 'Usuario registrado correctamente');
