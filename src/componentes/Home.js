@@ -1,30 +1,50 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, Text, View, ScrollView, Image } from 'react-native';
+import { StyleSheet, Text, View, ScrollView, Image, ActivityIndicator } from 'react-native';
 
 export default function Home() {
   const [data, setData] = useState([]);
+  const [cargando, setCargando] = useState(true);
 
   useEffect(() => {
     const obtenerDatos = async () => {
-      const res = await fetch("https://ghibliapi.vercel.app/films/");
-      const json = await res.json();
-      setData(json);
+      try {
+        const res = await fetch("https://ghibliapi.vercel.app/films/");
+        const json = await res.json();
+        setData(json);
+      } catch (error) {
+        console.error('Error al obtener datos:', error);
+      } finally {
+        setCargando(false);
+      }
     };
 
     obtenerDatos();
   }, []);
 
+  if (cargando) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <ActivityIndicator size="large" color="#0000ff" />
+        <Text>Cargando películas...</Text>
+      </View>
+    );
+  }
+
   return (
     <ScrollView>
       <View style={styles.lista}>
-        {data.map((film, index) => (
+        {data.map((film) => (
           <View key={film.id} style={styles.item}>
             <Text style={{ fontWeight: 'bold' }}>{film.title}</Text>
             <Text>Director: {film.director}</Text>
-            <Image
-              source={{ uri: film.image }}
-              style={styles.imagen}
-            />
+            {film.image ? (
+              <Image
+                source={{ uri: film.image }}
+                style={styles.imagen}
+              />
+            ) : (
+              <Text>Sin imagen</Text>
+            )}
           </View>
         ))}
       </View>
@@ -51,12 +71,5 @@ const styles = StyleSheet.create({
     width: 100,
     height: 150,
     resizeMode: 'contain',
-  },
-  buscador: {
-    margin: 10,
-    padding: 10,
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 10,
   },
 });

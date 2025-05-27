@@ -14,6 +14,8 @@ export default function Original() {
   const [userWin, setUserWin] = useState(0);
   const [userLose, setUserLose] = useState(0);
   const [uid, setUid] = useState(null);
+  const [gameFinished, setGameFinished] = useState(false);
+  const [answering, setAnswering] = useState(false);
   const TOTAL_QUESTIONS = 5;
 
   // Escuchar login
@@ -86,6 +88,7 @@ export default function Original() {
 
   const generateQuestion = (movieList) => {
     setLoading(true);
+    setAnswering(false);
     const correctMovie = movieList[Math.floor(Math.random() * movieList.length)];
     const incorrectMovies = movieList
       .filter(m => m.id !== correctMovie.id)
@@ -99,6 +102,8 @@ export default function Original() {
   };
 
   const handleAnswer = async (selected) => {
+    if (answering) return;
+    setAnswering(true);
     const isCorrect = selected.id === currentQuestion.id;
     if (isCorrect) {
       setScore(score + 1);
@@ -111,20 +116,24 @@ export default function Original() {
     await guardarResultado(isCorrect);
 
     if (questionCount + 1 >= TOTAL_QUESTIONS) {
+      setGameFinished(true);
       Alert.alert(
         '🎉 Fin del juego',
         `Tu puntuación: ${isCorrect ? score + 1 : score} / ${TOTAL_QUESTIONS}`,
-        [{ text: 'Reiniciar', onPress: resetGame }]
       );
     } else {
       setQuestionCount(questionCount + 1);
-      generateQuestion(movies);
+      setTimeout(() => {
+        generateQuestion(movies);
+        setAnswering(false);
+      }, 500);
     }
   };
 
   const resetGame = () => {
     setScore(0);
     setQuestionCount(0);
+    setGameFinished(false);
     generateQuestion(movies);
   };
 
@@ -136,6 +145,10 @@ export default function Original() {
 
       {loading || !currentQuestion ? (
         <ActivityIndicator size="large" />
+      ) : gameFinished ? (
+        <TouchableOpacity style={styles.option} onPress={resetGame}>
+          <Text style={styles.optionText}>Reiniciar juego</Text>
+        </TouchableOpacity>
       ) : (
         <View style={styles.quizContainer}>
           <Text style={styles.question}>
@@ -150,6 +163,7 @@ export default function Original() {
               key={index}
               style={styles.option}
               onPress={() => handleAnswer(opt)}
+              disabled={answering}
             >
               <Text style={styles.optionText}>{opt.title}</Text>
             </TouchableOpacity>

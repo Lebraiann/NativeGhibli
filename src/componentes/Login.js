@@ -4,15 +4,21 @@ import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../../firebase/firebaseConfig';
 import { useNavigation } from '@react-navigation/native';
 
-
 export default function Login() {
   const [correo, setCorreo] = useState('');
   const [contrasena, setContrasena] = useState('');
   const navigation = useNavigation();
 
   const handleLogin = async () => {
+    if (!correo || !contrasena) {
+      Alert.alert('Campos requeridos', 'Por favor ingresa tu correo y contraseña');
+      return;
+    }
     try {
       await signInWithEmailAndPassword(auth, correo, contrasena);
+      setCorreo('');
+      setContrasena('');
+      navigation.navigate('Home'); // Cambia 'Home' por el nombre correcto de tu pantalla principal
     } catch (error) {
       Alert.alert('Error al iniciar sesión', error.message);
     }
